@@ -2,10 +2,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "LinkedList.h"
+
+void printSomething(void *value);
 
 int main(){
 	
-	printf("This is the main function\n");
+    double x = 25;
+    double *px = &x;
+    printSomething(px);
 
-	return 0;
+    printf("This is the main function\n");
+
+    return 0;
+}
+
+void printSomething(void* value){
+    printf("Accepted the pointer\n");
 }
