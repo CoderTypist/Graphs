@@ -3,20 +3,53 @@
 #include <string.h>
 #include <stdbool.h>
 #include "LinkedList.h"
+#include "City.h"
+#define BUFFER_SIZE 50
 
 void printSomething(void *value);
 
 int main(){
-	
-    double x = 25;
-    double *px = &x;
-    printSomething(px);
+    
+    FILE* fpData;
+    
+    // opens cities.txt
+    if ( (fpData = fopen("cities.txt", "r")) == NULL ){
+        printf("\n\nError: test.c: main(): Failed to open cities.txt\n\n");
+        exit(1);
+    }
+    
+    char buffer[BUFFER_SIZE];
+    // cityName and cityStateCode sizes are based off
+    // specifications in City.h
+    char cityName[32];
+    char cityStateCode[3];
+    int iScanCnt;
+    // new City to be inserted to LinkedList
+    LinkedList *list = newLinkedList();
 
-    printf("This is the main function\n");
+    if( true == isEmpty(list) ){
+        printf("The list is empty\n");
+    }
+
+    City *c;
+    
+    // reads in data from cities.txt
+    while( NULL != fgets(buffer, BUFFER_SIZE, fpData) ){
+        
+        iScanCnt = sscanf( buffer, "%[^,], %s", cityName, cityStateCode );
+        c = newCity( cityName, cityStateCode );
+        // printf("NEW CITY: %s, %s\n", c->name, c->stateCode);
+        insertValue(list, c);
+    }
+    
+    if( false == isEmpty(list) ){
+        printf("The list is not empty\n");
+    }
+
+    printList(list);
+
+    fclose(fpData);
 
     return 0;
 }
 
-void printSomething(void* value){
-    printf("Accepted the pointer\n");
-}
