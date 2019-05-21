@@ -45,11 +45,36 @@ int main(){
     if( false == isEmpty(list) ){
         printf("The list is not empty\n");
     }
+    printf("\n");
 
     printList(list);
+    printf("Length before: %d\n", list->length);
+
+    printf("\n");    
+    City *remOne = newCity("Houston", "TX");
+    City *remTwo = newCity("New York", "NY");
+    City *remThree = newCity("San Jose", "CA"); 
+    
+    removeValue(list, remTwo);
+    removeValue(list, remThree);
+    removeValue(list, remOne);
+
+    printList(list);
+    printf("Length after: %d\n", list->length);
 
     fclose(fpData);
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
 
