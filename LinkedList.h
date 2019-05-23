@@ -49,15 +49,15 @@ typedef struct LinkedList{
 void* newList(); // tac
 LinkedList* newLinkedList(); // tac
 bool freeValue(); // tac
-bool freeList();
-void printList(); // TAC
+bool freeList(void *listStruct); // tac
+void printList(void *listStruct); // tac
 
 bool insertValue(void *listStruct, void *newValue); // tac
 bool removeValue(void *listStruct, void *valueToRemove); // tac
 
-bool insertAtIndex(void *listStruct, void *newValue, int index);
-bool removeAtIndex(void *listStruct, void *valueToRemove, int index);
-bool insertInOrder(void *listStruct, void *newValue);
+bool insertAtIndex(void *listStruct, void *newValue, int index); // tac
+void* removeAtIndex(void *listStruct, int index);
+bool insertSorted(void *listStruct, void *newValue);
 
 int compareValues(void *firstValue, void *secondValue); // tac
 bool isEmpty(void *listStruct); // tac
@@ -100,11 +100,32 @@ bool freeValue(void *valueToFree){
 
     City *c = (City*)valueToFree;
     free(c);
+    return true;
 }
 
-bool freeList(){
+bool freeList(void *listStruct){
+    
+    if( NULL == listStruct ){
+        return false;
+    }
 
-    return false;
+    LinkedList *list = (LinkedList*)listStruct;
+
+    llNode *curNode = list->pHead;
+    llNode *nextNode = NULL;
+
+    while( NULL != curNode ){
+        
+        nextNode = curNode->pNext;
+
+        freeValue(curNode->value);
+        free(curNode);
+        curNode = nextNode;
+    }
+    
+    free(list);
+
+    return true;
 }
 
 void printList(void *listStruct){
@@ -149,6 +170,7 @@ bool insertValue(void *listStruct, void *newValue){
     if( NULL == list->pHead ){
         list->pHead = newNode;
         list->pTail = newNode;
+        list->length = (list->length)+1;
         return true;
     }
 
@@ -157,6 +179,7 @@ bool insertValue(void *listStruct, void *newValue){
     list->pTail->pNext = newNode;
     list->pTail = newNode;
     list->length = (list->length) + 1;
+    return true;
 }
 
 bool removeValue(void *listStruct, void *valueToRemove){
@@ -233,16 +256,96 @@ bool removeValue(void *listStruct, void *valueToRemove){
     return false;
 }
 
-bool insertInOrder(void *listStruct, void *newValue){
-
-}
-
 bool insertAtIndex(void *listStruct, void *newValue, int index){
+    
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: insertAtIndex: void *listStruct was NULL\n\n");
+        return false;
+    }
+
+    if( NULL == newValue ){
+        printf("\n\n\tWarning: LinkedList.h: insertAtIndex: void *newValue was NULL\n\n");
+        return false;
+    }
+
+    LinkedList *list = (LinkedList*)listStruct;
+    
+    // if inserting at the index is the same as appending to the end of the list
+    if( index == list->length ){
+        return insertValue(listStruct, newValue);
+    }
+
+    // if the provided index is out of bounds ( except cases where index == list->length )
+    // index should not equal the length of the list
+    // The only case when index should equal the length of the list is when the list is empty
+    if( index < 0 || ( index >= list->length && list->length != 0 ) ){
+        printf("\n\n\tWarning: LinkedList.h: insertAtIndex: index out of bounds: int index was %d: list length is %d\n\n", index, list->length);
+        return false;
+    }
+
+    llNode *newNode = valueToNode(newValue);
+    
+    // if inserting at the beginning of the list
+    if( 0 == index ){
+        
+        newNode->pNext = list->pHead;
+        list->pHead = newNode;
+
+        // if the received list was empty
+        // This case would be caught by the if above:
+        // if ( index == list->length )
+        if( 0 == list->length ){
+            list->pTail = newNode;
+        }
+        
+        // increase the size of the list
+        list->length = (list->length)+1;
+
+        return true;
+    }
+    
+    // inserting at index 0 was already considered above
+    // therefore, curIndex must start at 1
+    int curIndex = 1;
+    llNode *previous = list->pHead;
+    llNode *curNode = list->pHead->pNext;
+    
+    while( NULL != curNode ){
+        
+        if( curIndex == index ){
+            
+            previous->pNext = newNode;
+            newNode->pNext = curNode;
+
+            // newNode will never be appended to the end of the list
+            // Therefore, no check needs to be done to see if pTail
+            // should be updated. This is because insertValue() was called
+            // if index == list->length, in which case pTail would need to
+            // be modified
+            
+            list->length = (list->length)+1;
+            return true;
+        }
+        
+        previous = curNode;
+        curNode = curNode->pNext;
+        curIndex++;
+    }
+    
+    printf("\n\n\tWarning: LinkedList.h: insertAtIndex(): Unexpectedly reached end of function\n\n");
+
+    return false;
 
 }
 
-bool removeAtIndex(void *listStruct, void *valueToRemove, int index){
+void* removeAtIndex(void *listStruct, int index){
+    
+    return false;
+}
 
+bool insertSorted(void *listStruct, void *newValue){
+    
+    return false;
 }
 
 // returns LESS_THAN, EQUALS, GREATER_THAN, or ERROR

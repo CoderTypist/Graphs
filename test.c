@@ -27,10 +27,6 @@ int main(){
     // new City to be inserted to LinkedList
     LinkedList *list = newLinkedList();
 
-    if( true == isEmpty(list) ){
-        printf("The list is empty\n");
-    }
-
     City *c;
     
     // reads in data from cities.txt
@@ -50,22 +46,34 @@ int main(){
     printList(list);
     printf("Length before: %d\n", list->length);
 
-    printf("\n");    
+    printf("\n");   
+    
+    LinkedList *places = newLinkedList();
+
     City *remOne = newCity("Houston", "TX");
     City *remTwo = newCity("New York", "NY");
     City *remThree = newCity("San Jose", "CA"); 
     
-    removeValue(list, remTwo);
-    removeValue(list, remThree);
-    removeValue(list, remOne);
+    
+    insertAtIndex(places, remOne, 0);
+    insertValue(places, remThree);
+    insertAtIndex(places, remTwo, 1);
+    
+    printf("\n\nplaces:\n");
+    printList(places);
 
-    printList(list);
-    printf("Length after: %d\n", list->length);
+    freeValue(remOne);
+    freeValue(remTwo);
+    freeValue(remThree);
+
+    freeList(list);
+    freeList(places);
 
     fclose(fpData);
 
     return 0;
 }
+
 
 
 
