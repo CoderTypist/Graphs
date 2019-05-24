@@ -3,21 +3,13 @@
  * compareValues()
  *     - used by removeValue()
  *     - used by removeAtIndex()
+ *     - used by insertSorted()
  * printList()
  * freeValue()
  *     - used by removeValue()
  *     - used by removeAtIndex()
  * 
  * City.h is included for testing purposes.
- *
- * I leave little comments after my function protypes to inidicate the progress
- * I have made with a particular function
- *
- * // fbu
- * means, "Finished, but untested"
- *
- * // tac
- * means, "Tested and complete"
  *
  */
 
@@ -46,22 +38,22 @@ typedef struct LinkedList{
     int length;
 }LinkedList;
 
-void* newList(); // tac
-LinkedList* newLinkedList(); // tac
-bool freeValue(); // tac
-bool freeList(void *listStruct); // tac
-void printList(void *listStruct); // tac
+void* newList();
+LinkedList* newLinkedList();
+bool freeValue();
+bool freeList(void *listStruct);
+void printList(void *listStruct);
 
-bool insertValue(void *listStruct, void *newValue); // tac
-bool removeValue(void *listStruct, void *valueToRemove); // tac
+bool insertValue(void *listStruct, void *newValue);
+bool removeValue(void *listStruct, void *valueToRemove);
 
-bool insertAtIndex(void *listStruct, void *newValue, int index); // tac
+bool insertAtIndex(void *listStruct, void *newValue, int index);
 void* removeAtIndex(void *listStruct, int index);
 bool insertSorted(void *listStruct, void *newValue);
 
-int compareValues(void *firstValue, void *secondValue); // tac
-bool isEmpty(void *listStruct); // tac
-llNode* valueToNode(void *value); // tac
+int compareValues(void *firstValue, void *secondValue);
+bool isEmpty(void *listStruct);
+llNode* valueToNode(void *value);
 
 void* newList(){
 
@@ -332,7 +324,7 @@ bool insertAtIndex(void *listStruct, void *newValue, int index){
         curIndex++;
     }
     
-    printf("\n\n\tWarning: LinkedList.h: insertAtIndex(): Unexpectedly reached end of function\n\n");
+    printf("\n\n\tWarning: LinkedList.h: insertAtIndex(): Unexpectedly reached end of function: index == %d\n\n", index);
 
     return false;
 
@@ -340,11 +332,164 @@ bool insertAtIndex(void *listStruct, void *newValue, int index){
 
 void* removeAtIndex(void *listStruct, int index){
     
-    return false;
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: removeAtIndex: void *listStruct was NULL\n\n");
+        return NULL;
+    }
+
+    LinkedList *list = (LinkedList*)listStruct;
+    int listLength = list->length;
+
+    // out of bounds
+    // handles case: 0 == listLength
+    if( index < 0 || index >= listLength ){
+        printf("\n\n\tWarning: LinkedList.h: removeAtIndex: index out of bounds: int index was %d: list length is %d\n\n", index, list->length);
+        return NULL;
+    }
+    
+    void *removedValue = NULL;
+
+    // if removing the first element
+    if( index == 0 ){
+        
+        removedValue = list->pHead->value;
+
+        // if the list only has one element
+        if( listLength == 1 ){
+            
+            // the llNode is freed, but the value is not
+            free(list->pHead);
+            list->pHead = NULL;
+            list->pTail = NULL;
+            list->length = 0;
+            return removedValue;
+        }
+
+        // if the list has more than one element and the index is 0
+        else{
+            
+            llNode *hold = list->pHead;
+            list->pHead = list->pHead->pNext;
+            free(hold);
+            list->length = listLength-1;
+            return removedValue;
+        }
+    }
+
+    // if the list has more than one element and index is not 0
+    else{
+        
+        // previous can be list->pHead because the above code3 checks for when index == 0
+        llNode *previous = list->pHead;
+        llNode *curNode = list->pHead->pNext;
+        int curIndex = 1;
+
+        while( curNode != NULL ){
+            
+            // index to be removed is reached
+            if( curIndex == index ){
+                
+                previous->pNext = curNode->pNext;
+                removedValue = curNode->value;
+                free(curNode);
+                break;
+                // removedValue is returned below
+            }
+
+            curIndex++;
+            previous = curNode;
+            curNode = curNode->pNext;
+        }
+
+        // if the last element is being removed
+        if( index == (listLength-1) ){
+            
+            // at this point, previous should be the node before the last node
+            list->pTail = previous;
+        }
+        
+        list->length = listLength-1;
+        return removedValue;
+    }
+    
+    // out of bounds was checked and empty list was checked
+    // if the code reaches this point, there was an error removing the node
+    printf("\n\n\tWarning: LinkedList.h: removeAtIndex(): Unexpectedly reached end of function: index == %d\n\n", index);
+
+    return NULL;
 }
 
 bool insertSorted(void *listStruct, void *newValue){
     
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: insertSorted(): void *listStruct was NULL\n\n");
+        return false;
+    }
+
+    if( NULL == newValue ){
+        printf("\n\n\tWarning: LinkedList.h: insertSorted(): void *newValue was NULL\n\n");
+        return false;
+    }
+
+    LinkedList *list = (LinkedList*)listStruct;
+    int listLength = list->length;
+    llNode *newNode = valueToNode(newValue);
+
+    // failed to create newNode
+    if( NULL == newNode ){
+        printf("\n\n\tWarning: LinkedList.h: insertSorted(): void *newNode was NULL\n\n");
+        return false;
+    }
+
+    // if the list is empty
+    if( 0 == listLength ){
+        
+        list->pHead = newNode;
+        list->pTail = newNode;
+        list->length = listLength+1;
+        return true;
+    }
+
+    // if inserting at the beginning of the list
+    if( LESS_THAN == compareValues(newValue, list->pHead->value) ){
+        
+        newNode->pNext = list->pHead;
+        list->pHead = newNode;
+        list->length = listLength+1;
+        return true;
+    }
+
+    // the above if already handled inserting at the beginning of the list
+    llNode *previous = list->pHead;
+    llNode *curNode = list->pHead->pNext;
+    int curIndex = 1;
+
+    while( NULL != curNode ){
+        
+        // inserts newNode
+        if( LESS_THAN == compareValues(newValue, curNode->value) ){
+            
+            previous->pNext = newNode;
+            newNode->pNext = curNode;
+            list->length = listLength+1;
+            return true;
+        }
+
+        previous = curNode;
+        curNode = curNode->pNext;
+        curIndex++;
+    }
+
+    // if this point has been reached, it means that all values
+    // in the list were less than newValue
+    if( curIndex == listLength ){
+        list->pTail->pNext = newNode;
+        list->pTail = newNode;
+        list->length = listLength+1;
+        return true;
+    }
+    
+    printf("\n\n\tWarning: LinkedList.h: insertSorted(): Unexpectedly reached end of function\n\n");
     return false;
 }
 
@@ -360,6 +505,7 @@ int compareValues(void *firstValue, void *secondValue){
         printf("\n\n\tWarning: LinkedList.h: compareValues(): void *secondValue was NULL\n\n");
         return -1;
     }
+
 
     // MODIFICATION BEGINS HERE
     City *cityOne = (City*)firstValue;
@@ -422,7 +568,7 @@ llNode* valueToNode(void* value){
     
     // failed to allocate memory for new node
     if( NULL == newNode ){
-        printf("\n\n\tError: LinkedList.h: valueToNode: failed to allocate memory for void* value\n\n");
+        printf("\n\n\tError: LinkedList.h: valueToNode: failed to allocate memory for llNode* newNode\n\n");
         exit(1);
     }
 
@@ -432,19 +578,4 @@ llNode* valueToNode(void* value){
 }
 
 #endif // _LinkedList_h_
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

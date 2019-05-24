@@ -6,7 +6,7 @@
 #include "City.h"
 #define BUFFER_SIZE 50
 
-void printSomething(void *value);
+void printListLength(LinkedList *list);
 
 int main(){
     
@@ -35,7 +35,8 @@ int main(){
         iScanCnt = sscanf( buffer, "%[^,], %s", cityName, cityStateCode );
         c = newCity( cityName, cityStateCode );
         // printf("NEW CITY: %s, %s\n", c->name, c->stateCode);
-        insertValue(list, c);
+        // insertValue(list, c);
+        insertSorted(list, c);
     }
     
     if( false == isEmpty(list) ){
@@ -48,19 +49,37 @@ int main(){
 
     printf("\n");   
     
+    // testing insertSorted
     LinkedList *places = newLinkedList();
 
     City *remOne = newCity("Houston", "TX");
     City *remTwo = newCity("New York", "NY");
     City *remThree = newCity("San Jose", "CA"); 
     
-    
-    insertAtIndex(places, remOne, 0);
-    insertValue(places, remThree);
-    insertAtIndex(places, remTwo, 1);
+    insertSorted(places, remOne);
+    insertSorted(places, remTwo);
+    insertSorted(places, remThree);
     
     printf("\n\nplaces:\n");
     printList(places);
+
+    freeValue(remOne);
+    freeValue(remTwo);
+    freeValue(remThree);
+    
+    // testing removeAtIndex()
+    printListLength(list);
+    remOne = removeAtIndex(list, 9);
+    printListLength(list);
+    remTwo = removeAtIndex(list, 0);
+    printListLength(list);
+    remThree = removeAtIndex(list, 2);
+    printListLength(list);
+
+    printf("\n\nTesting removeAtIndex():\n");
+    printList(list);
+    printf("List length after: %d\n", list->length);
+    printf("\nGotta represent %s\n", remThree->name);
 
     freeValue(remOne);
     freeValue(remTwo);
@@ -72,6 +91,11 @@ int main(){
     fclose(fpData);
 
     return 0;
+}
+
+void printListLength(LinkedList *list){
+    
+    printf("\nLength of the list is: %d\n", list->length);
 }
 
 
