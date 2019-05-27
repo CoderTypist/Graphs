@@ -12,7 +12,7 @@ I realized that a lot of the functions that I would write for linked lists could
 IMPLEMENTING THE USE OF VOID POINTERS TO CREATE FUNCTIONS THAT CAN BE USED BY DIFFERENT DATA STRUCTURES
 
 
-Had I been coding in Java, I could have made it to where Queue extended LinkedList, but that wasn't an option since I was using C. My solution was to use void pointers. I would make a printList() function that received a void pointer. Since the linked list structure was the same as the queue structure, I could simply receive a void pointer and then cast the pointer to a LinkedList. Even if the void pointer was pointing to a queue, no problems would arise since they would have the same attributes.
+Had I been coding in Java, I could have made it to where Queue extended LinkedList, but that wasn't an option since I was using C. The solution was to use void pointers. I would make a printList() function that received a void pointer. Since the linked list structure was the same as the queue structure, I could simply receive a void pointer and then cast the pointer to a LinkedList. Even if the void pointer was pointing to a queue, no problems would arise since they have the same attributes. By using void pointers, it is possible to emulate inheritance.
 
 
 BEING ABLE TO STORE ANY DATA TYPE WITH MINIMUM MODIFICATION REQUIRED
