@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "LinkedList.h"
 #include "Queue.h"
+#include "PriorityQueue.h"
 #include "City.h"
 #define BUFFER_SIZE 50
 
@@ -27,7 +28,7 @@ int main(){
     int iScanCnt;
     // new City to be inserted to LinkedList
     // LinkedList *list = newLinkedList();
-    Queue *q = newQueue();
+    PriorityQueue *pq = newPriorityQueue();
 
     City *c;
     
@@ -38,19 +39,24 @@ int main(){
         c = newCity( cityName, cityStateCode );
         // printf("NEW CITY: %s, %s\n", c->name, c->stateCode);
         // insertValue(list, c);
-        enqueue(q, c);
+        priorityEnqueue(pq, c);
     }
     
-    if( false == isEmpty(q) ){
+    if( false == isEmpty(pq) ){
         printf("The queue is not empty\n");
     }
     printf("\n");
 
-    printQueue(q);
-    printf("Length before: %d\n", q->length);
+    printPriorityQueue(pq);
+    printf("Length before: %d\n", pq->length);
 
     printf("\n");   
-    
+
+    City *pqRem = priorityDequeue(pq);
+    printf("Name of removed city: %s\n", pqRem->name);
+    printPriorityQueue(pq);
+    printf("\nLength of queue is now: %d\n\n", pq->length);
+
     // City *remOne = newCity("Houston", "TX");
     // City *remTwo = newCity("New York", "NY");
     // City *remThree = newCity("San Jose", "CA"); 
@@ -58,8 +64,9 @@ int main(){
     // freeValue(remOne);
     // freeValue(remTwo);
     // freeValue(remThree);
-
-    freeQueue(q);
+    
+    freeValue(pqRem);
+    freePriorityQueue(pq);
     fclose(fpData);
 
     return 0;

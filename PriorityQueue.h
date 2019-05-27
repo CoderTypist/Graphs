@@ -36,11 +36,6 @@ void* priorityDequeue(PriorityQueue* pq);
 PriorityQueue* newPriorityQueue(){
     
     void *list = newList();
-
-    if( NULL == list ){
-        return NULL;
-    }
-
     return (PriorityQueue*)list;
 }
 

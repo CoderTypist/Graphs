@@ -36,11 +36,6 @@ void* dequeue(Queue* q);
 Queue* newQueue(){
     
     void *list = newList();
-
-    if( NULL == list ){
-        return NULL;
-    }
-
     return (Queue*)list;
 }
 
