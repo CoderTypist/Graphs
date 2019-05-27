@@ -3,10 +3,11 @@
 #include <string.h>
 #include <stdbool.h>
 #include "LinkedList.h"
+#include "Queue.h"
 #include "City.h"
 #define BUFFER_SIZE 50
 
-void printListLength(LinkedList *list);
+void printListLength(void *listStruct);
 
 int main(){
     
@@ -25,7 +26,8 @@ int main(){
     char cityStateCode[3];
     int iScanCnt;
     // new City to be inserted to LinkedList
-    LinkedList *list = newLinkedList();
+    // LinkedList *list = newLinkedList();
+    Queue *q = newQueue();
 
     City *c;
     
@@ -36,65 +38,36 @@ int main(){
         c = newCity( cityName, cityStateCode );
         // printf("NEW CITY: %s, %s\n", c->name, c->stateCode);
         // insertValue(list, c);
-        insertSorted(list, c);
+        enqueue(q, c);
     }
     
-    if( false == isEmpty(list) ){
-        printf("The list is not empty\n");
+    if( false == isEmpty(q) ){
+        printf("The queue is not empty\n");
     }
     printf("\n");
 
-    printList(list);
-    printf("Length before: %d\n", list->length);
+    printQueue(q);
+    printf("Length before: %d\n", q->length);
 
     printf("\n");   
     
-    // testing insertSorted
-    LinkedList *places = newLinkedList();
-
-    City *remOne = newCity("Houston", "TX");
-    City *remTwo = newCity("New York", "NY");
-    City *remThree = newCity("San Jose", "CA"); 
+    // City *remOne = newCity("Houston", "TX");
+    // City *remTwo = newCity("New York", "NY");
+    // City *remThree = newCity("San Jose", "CA"); 
     
-    insertSorted(places, remOne);
-    insertSorted(places, remTwo);
-    insertSorted(places, remThree);
-    
-    printf("\n\nplaces:\n");
-    printList(places);
+    // freeValue(remOne);
+    // freeValue(remTwo);
+    // freeValue(remThree);
 
-    freeValue(remOne);
-    freeValue(remTwo);
-    freeValue(remThree);
-    
-    // testing removeAtIndex()
-    printListLength(list);
-    remOne = removeAtIndex(list, 9);
-    printListLength(list);
-    remTwo = removeAtIndex(list, 0);
-    printListLength(list);
-    remThree = removeAtIndex(list, 2);
-    printListLength(list);
-
-    printf("\n\nTesting removeAtIndex():\n");
-    printList(list);
-    printf("List length after: %d\n", list->length);
-    printf("\nGotta represent %s\n", remThree->name);
-
-    freeValue(remOne);
-    freeValue(remTwo);
-    freeValue(remThree);
-
-    freeList(list);
-    freeList(places);
-
+    freeQueue(q);
     fclose(fpData);
 
     return 0;
 }
 
-void printListLength(LinkedList *list){
+void printListLength(void *listStruct){
     
+    LinkedList *list = (LinkedList*)listStruct;
     printf("\nLength of the list is: %d\n", list->length);
 }
 

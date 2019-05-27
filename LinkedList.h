@@ -1,4 +1,6 @@
-/* 
+/*
+ * author Christian Bargraser
+ * 
  * Functions that need to be rewritten depending on the data type in the list:
  * compareValues()
  *     - used by removeValue()
