@@ -43,13 +43,32 @@ int main(){
         push(s, c);
     }
     
+    printf("\nOriginal data in List Structure:\n");
+    printList(s);
+
+    void **arr = listToIndependentArray(s);
+    printf("\nOriginal data in array:\n");
+    printArray(arr);
+    printf("\nThe size of the array is %d\n", arrayLength(arr)); 
+
+    // City *cityFromArray = arr[0];
+    // strcpy(cityFromArray->name, "Pizza Town");
+    
+    strcpy( ((City*)s->pHead->value)->name, "Pizza Town");
+
+    printf("\nData in array after the change:\n");
+    printArray(arr);
+
+    printf("\nData in the List Structure after the change:\n");
+    printList(s);
+
     if( false == isEmpty(s) ){
         printf("The queue is not empty\n");
     }
     printf("\n");
 
     printStack(s);
-    printf("Length before: %d\n", s->length);
+    printf("\nLength before: %d\n", s->length);
 
     printf("\n");   
 
@@ -69,6 +88,15 @@ int main(){
     freeValue(sRem);
     freeStack(s);
     fclose(fpData);
+    
+    City *sample = newCity("Ababua", "AB");
+    City *clone = cloneValue(sample);
+    printf("ORIGINAL:\n");
+    printCity(sample);
+    printf("CLONE:\n");
+    printCity(clone);
+    freeValue(sample);
+    freeValue(clone);
 
     return 0;
 }

@@ -2,14 +2,19 @@
  * author Christian Bargraser
  * 
  * Functions that need to be rewritten depending on the data type in the list:
+ *
  * compareValues()
  *     - used by removeValue()
  *     - used by removeAtIndex()
  *     - used by insertSorted()
- * printList()
+ * printValue()
+ *     - used by printList()
+ *     - used by printArray()
  * freeValue()
  *     - used by removeValue()
  *     - used by removeAtIndex()
+ * cloneValue()
+ *     - used by listToIndependentArray()
  * 
  * City.h is included for testing purposes.
  *
@@ -40,22 +45,130 @@ typedef struct LinkedList{
     int length;
 }LinkedList;
 
+// llNode functions
+void* cloneValue(void *originalValue);
+bool freeValue();
+void printValue(void *value);
+int compareValues(void *firstValue, void *secondValue);
+llNode* valueToNode(void *value);
+
+// list functions
 void* newList();
 LinkedList* newLinkedList();
-bool freeValue();
 bool freeList(void *listStruct);
 void printList(void *listStruct);
-
 bool insertValue(void *listStruct, void *newValue);
 bool removeValue(void *listStruct, void *valueToRemove);
-
 bool insertAtIndex(void *listStruct, void *newValue, int index);
 void* removeAtIndex(void *listStruct, int index);
 bool insertSorted(void *listStruct, void *newValue);
-
-int compareValues(void *firstValue, void *secondValue);
 bool isEmpty(void *listStruct);
-llNode* valueToNode(void *value);
+
+// array functions
+void* listToDependentArray(void *listStruct);
+void* listToIndpendentArray(void *listStruct);
+bool freeDependentArray(void **arr); // in progress
+bool freeIndependentArray(void **arr); // in progress
+bool binarySearch(void *listStruct, void *lookingFor); // in progress
+void printArray(void **arr);
+int arrayLength(void **arr);
+
+void* cloneValue(void *originalValue){
+    
+    if( NULL == originalValue ){
+        printf("\n\n\tWarning: LinkedList.h: cloneValue(): void *originalValue was NULL\n\n");
+        return NULL;
+    }
+
+    City *clone = newCity( ((City*)originalValue)->name, ((City*)originalValue)->stateCode);
+    
+    if( NULL == clone ){
+        printf("\n\n\tWarning: LinkedList.h: cloneValue(): failed to create clone of originalValue\n\n");
+        return NULL;
+    }
+
+    return clone;
+}
+
+bool freeValue(void *valueToFree){
+    
+    if( NULL == valueToFree ){
+        printf("\n\n\tWarning: LinkedList.h: freeValue(): void *valueToFree was NULL\n\n");
+        return false;
+    }
+
+    City *c = (City*)valueToFree;
+    free(c);
+    return true;
+}
+
+void printValue(void *value){
+    printCity((City*)(value));
+}
+
+// returns LESS_THAN, EQUALS, GREATER_THAN, or ERROR
+int compareValues(void *firstValue, void *secondValue){
+    
+    if( NULL == firstValue ){
+        printf("\n\n\tWarning: LinkedList.h: compareValues(): void *firstValue was NULL\n\n");
+        return -1;
+    }
+
+    if( NULL == secondValue ){
+        printf("\n\n\tWarning: LinkedList.h: compareValues(): void *secondValue was NULL\n\n");
+        return -1;
+    }
+
+
+    // MODIFICATION BEGINS HERE
+    City *cityOne = (City*)firstValue;
+    City *cityTwo = (City*)secondValue;
+    
+    if( NULL == cityOne->name ){
+        printf("\n\n\tWarning: LinkedList.h: compareValues(): cityOne->name is NULL\n\n");
+        return -1;
+    }
+
+    if( NULL == cityTwo->name ){
+        printf("\n\n\tWarning: LinkedList.h: compareValues(): cityTwo->name is NULL\n\n");
+        return -1;
+    }
+
+    int comparisonResult = strcmp(cityOne->name, cityTwo->name);
+    
+    if( comparisonResult < 0 ){
+        return LESS_THAN;
+    }
+
+    else if( comparisonResult > 0 ){
+        return GREATER_THAN;
+    }
+
+    else{
+        return EQUAL;
+    }
+}
+
+llNode* valueToNode(void* value){
+    
+    // received value was NULL
+    if( NULL == value ){
+        printf("\n\n\tWarning: LinkedList.h: valueToNode(): void* value was NULL\n\n");
+        return NULL;
+    }
+
+    llNode* newNode = (llNode*)malloc(sizeof(llNode));
+    
+    // failed to allocate memory for new node
+    if( NULL == newNode ){
+        printf("\n\n\tError: LinkedList.h: valueToNode(): failed to allocate memory for llNode* newNode\n\n");
+        exit(1);
+    }
+
+    newNode->value = value;
+    newNode->pNext = NULL;
+    return newNode;
+}
 
 void* newList(){
 
@@ -83,18 +196,6 @@ LinkedList* newLinkedList(){
     }
 
     return (LinkedList*)list;
-}
-
-bool freeValue(void *valueToFree){
-    
-    if( NULL == valueToFree ){
-        printf("\n\n\tWarning: LinkedList.h: freeValue(): void *valueToFree was NULL\n\n");
-        return false;
-    }
-
-    City *c = (City*)valueToFree;
-    free(c);
-    return true;
 }
 
 bool freeList(void *listStruct){
@@ -134,7 +235,7 @@ void printList(void *listStruct){
 
     while( NULL != curNode ){
         
-        printCity((City*)(curNode->value));
+        printValue(curNode->value);
         curNode = curNode->pNext;
     }
     
@@ -495,49 +596,6 @@ bool insertSorted(void *listStruct, void *newValue){
     return false;
 }
 
-// returns LESS_THAN, EQUALS, GREATER_THAN, or ERROR
-int compareValues(void *firstValue, void *secondValue){
-    
-    if( NULL == firstValue ){
-        printf("\n\n\tWarning: LinkedList.h: compareValues(): void *firstValue was NULL\n\n");
-        return -1;
-    }
-
-    if( NULL == secondValue ){
-        printf("\n\n\tWarning: LinkedList.h: compareValues(): void *secondValue was NULL\n\n");
-        return -1;
-    }
-
-
-    // MODIFICATION BEGINS HERE
-    City *cityOne = (City*)firstValue;
-    City *cityTwo = (City*)secondValue;
-    
-    if( NULL == cityOne->name ){
-        printf("\n\n\tWarning: LinkedList.h: compareValues(): cityOne->name is NULL\n\n");
-        return -1;
-    }
-
-    if( NULL == cityTwo->name ){
-        printf("\n\n\tWarning: LinkedList.h: compareValues(): cityTwo->name is NULL\n\n");
-        return -1;
-    }
-
-    int comparisonResult = strcmp(cityOne->name, cityTwo->name);
-    
-    if( comparisonResult < 0 ){
-        return LESS_THAN;
-    }
-
-    else if( comparisonResult > 0 ){
-        return GREATER_THAN;
-    }
-
-    else{
-        return EQUAL;
-    }
-}
-
 bool isEmpty(void* listStruct){
     
     if( NULL == listStruct){
@@ -558,26 +616,166 @@ bool isEmpty(void* listStruct){
     }
 }
 
-llNode* valueToNode(void* value){
+/*
+ * WHAT IS MEANT BY "DEPENDENT ARRAY"?
+ * The returned array will be dependent upon the the received list structure because the array will point
+ * to the same values that the list points to. Modifying a value in the returned array will modify the
+ * the value held by the list structure. 
+ *
+ * WHY WOULD I WANT A "DEPENDENT ARRAY"?
+ * The purpose of creating an array that points to the same values as the LinkedList is to be able to use
+ * a binary search. Data of unknown length can quickly be loaded into an LinkedList. If it is necessary to 
+ * search through the data, the LinkedList can then be converted to an array by using this function.
+ *
+ * WHAT ARE THE LIMITATIONS OF THIS FUNCTION?
+ * If you remove a node from the LinkedList, the change will not be applied to the array version of the list.
+ * If a node is removed or added to the LinkedList, this function will have to be called again in order to
+ * get an updated array.
+ *
+ * If the received list is of size 0, NULL is returned
+ * Otherwise, a pointer (array) is returned
+ */
+void* listToDependentArray(void *listStruct){
     
-    // received value was NULL
-    if( NULL == value ){
-        printf("\n\n\tWarning: LinkedList.h: valueToNode: void* value was NULL");
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: listToDependentArray(): void *listStruct was NULL\n\n");
         return NULL;
     }
 
-    llNode* newNode = (llNode*)malloc(sizeof(llNode));
+    LinkedList *receivedList = listStruct;
     
-    // failed to allocate memory for new node
-    if( NULL == newNode ){
-        printf("\n\n\tError: LinkedList.h: valueToNode: failed to allocate memory for llNode* newNode\n\n");
+    // received list was empty, NULL is returned
+    if( 0 == receivedList->length ){
+        return NULL;
+    }
+    
+    int arrLength = receivedList->length;
+    void **arr = (void**)malloc( (arrLength+1)*sizeof(void*) ); // 1 is added to make the last element NULL
+
+    if( NULL == arr ){
+        printf("\n\n\tError: LinkedList.h: listToDependentArray(): Could not allocate memory for void *arr\n\n");
         exit(1);
     }
+    
+    // copies the pointers from the LinkedList to the array
+    llNode *curNode = receivedList->pHead;
+    int i;
+    for( i = 0; i < arrLength; i++ ){
+        
+        arr[i] = curNode->value;
+        curNode = curNode->pNext;
+    }
+    arr[i] = NULL;
 
-    newNode->value = value;
-    newNode->pNext = NULL;
-    return newNode;
+    return arr;
+}
+
+/* 
+ * WHAT IS MEANT BY "INDEPENDENT ARRAY"?
+ * The returned array will be indpendent of the received list structure because all of the value in the list
+ * will be cloned/recreated and added to the array. Modifying a value in the array will not have any affect
+ * on the values in the list. 
+ *
+ * If the received list is of size 0, NULL is returned
+ * Otherwise, a pointer (array) is returned
+ */
+void* listToIndependentArray(void *listStruct){
+    
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: listToIndependentArray(): void *listStruct was NULL\n\n");
+        return NULL;
+    }
+
+    LinkedList *receivedList = listStruct;
+    
+    // received list was empty, NULL is returned
+    if( 0 == receivedList->length ){
+        return NULL;
+    }
+    
+    int arrLength = receivedList->length;
+    void **arr = (void**)malloc( (arrLength+1)*sizeof(void*) ); // 1 is added to make the last element NULL
+
+    if( NULL == arr ){
+        printf("\n\n\tError: LinkedList.h: listToIndependentArray(): Could not allocate memory for void *arr\n\n");
+        exit(1);
+    }
+    
+    // copies the pointers from the LinkedList to the array
+    llNode *curNode = receivedList->pHead;
+    int i;
+    for( i = 0; i < arrLength; i++ ){
+        
+        arr[i] = cloneValue(curNode->value);
+        curNode = curNode->pNext;
+    }
+    arr[i] = NULL;
+
+    return arr;
+}
+
+bool freeDependentArray(void **arr){
+    
+    return false;
+}
+
+bool freeIndependentArray(void **arr){
+    
+    return false;
+}
+
+bool binarySearch(void *listStruct, void *lookingFor){
+    
+    return false;
+}
+
+void printArray(void **arr){
+    
+    if( NULL == arr ){
+        printf("\n\n\tWarning: LinkedList.h: printArray(): void **arr was NULL\n\n");
+    }
+
+    void *curValue = arr[0];
+
+    while( NULL != curValue ){
+        printValue(curValue);
+        arr++;
+        curValue = arr[0];
+    }
+}
+
+int arrayLength(void **arr){
+    
+    if( NULL == arr ){
+        printf("\n\n\tWarning: LinkedList.h: arrayLength(): void **arr was NULL\n\n");
+        return 0;
+    }
+    
+    int numElements = 0;
+    void *curValue = arr[0];
+
+    while( NULL != curValue ){
+        numElements++;
+        arr++;
+        curValue = arr[0];
+    }
+
+    return numElements;
 }
 
 #endif // _LinkedList_h_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
