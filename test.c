@@ -46,7 +46,7 @@ int main(){
     printf("\nOriginal data in List Structure:\n");
     printList(s);
 
-    void **arr = listToIndependentArray(s);
+    void **arr = listToDependentArray(s);
     printf("\nOriginal data in array:\n");
     printArray(arr);
     printf("\nThe size of the array is %d\n", arrayLength(arr)); 
@@ -89,14 +89,7 @@ int main(){
     freeStack(s);
     fclose(fpData);
     
-    City *sample = newCity("Ababua", "AB");
-    City *clone = cloneValue(sample);
-    printf("ORIGINAL:\n");
-    printCity(sample);
-    printf("CLONE:\n");
-    printCity(clone);
-    freeValue(sample);
-    freeValue(clone);
+    freeDependentArray(arr);
 
     return 0;
 }

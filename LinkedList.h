@@ -67,9 +67,9 @@ bool isEmpty(void *listStruct);
 // array functions
 void* listToDependentArray(void *listStruct);
 void* listToIndpendentArray(void *listStruct);
-bool freeDependentArray(void **arr); // in progress
-bool freeIndependentArray(void **arr); // in progress
-bool binarySearch(void *listStruct, void *lookingFor); // in progress
+bool freeDependentArray(void **arr);
+bool freeIndependentArray(void **arr);
+void* binarySearch(void **arr, int arrLength, void *lookingFor);
 void printArray(void **arr);
 int arrayLength(void **arr);
 
@@ -716,16 +716,72 @@ void* listToIndependentArray(void *listStruct){
 
 bool freeDependentArray(void **arr){
     
-    return false;
+    if( NULL == arr ){
+        return false;
+    }
+
+    free(arr);
+    return true;
 }
 
 bool freeIndependentArray(void **arr){
     
-    return false;
+    if( NULL == arr ){
+        return false;
+    }
+
+    void **startAddress = arr;
+    void *curValue = arr[0];
+
+    while( NULL != curValue ){
+        freeValue(curValue);
+        arr[0] = NULL;
+        arr++;
+        curValue = arr[0];
+    }
+    
+    free(startAddress);
+
+    return true;
+
 }
 
-bool binarySearch(void *listStruct, void *lookingFor){
+/* 
+ * ARRAY WAS CREATED FROM A LINKED LIST
+ * If the array was created from a linked list using the listToDependentArray() or
+ * listToIndendentArray() functions, the length of the array can be retrieved from the lists
+ * length attribute. 
+ *
+ *     Ex: void *valueIWant = binarySearch(arr, listStructure->length, valueIAmLookingFor);
+ *
+ * LENGTH OF THE ARRAY IS UNKNOWN
+ * If the length of the array is unknown or the length of the array is no longer in sync with 
+ * the original list structure, you would need to call arrayLength()
+ *
+ *     Ex: void *valueIWant = binarySearch(arr, arrLength(arr), valueIAmLookingFor);
+ */
+void* binarySearch(void **arr, int arrLength, void *lookingFor){
     
+    if( NULL == arr ){
+        printf("\n\n\tWarning: LinkedList.h: binarySearch(): void *listStruct was NULL\n\n");
+        return NULL;
+    }
+
+    if( NULL == lookingFor ){
+        printf("\n\n\tWarning: LinkedList.h: binarySearch(): void *lookingFor was NULL\n\n");
+        return NULL;
+    }
+    
+    if( NULL == arr[0] ){
+        printf("\n\n\tWarning: LinkedList.h: binarySearch(): empty array: arr[0] is NULL\n\n");
+        return NULL;
+    }
+    
+    if( arrLength <= 0 ){
+        printf("\n\n\tWarning: LinkedList.h: binarySearch(): parameter int arrLength is %d\n\n", arrLength);
+        return NULL;
+    }
+
     return false;
 }
 
