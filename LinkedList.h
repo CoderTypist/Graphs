@@ -33,9 +33,6 @@
 #define LESS_THAN 1
 #define GREATER_THAN 2
 
-// can be used in binarySearch()
-#define VIEW_BINARY_SEARCH printf("Comparing...\n");printValue(arr[middle]);printValue(lookingFor);printf("\n");
-
 typedef struct llNode{
 
     void *value;
@@ -59,6 +56,8 @@ llNode* valueToNode(void *value);
 // list functions
 void* newList();
 LinkedList* newLinkedList();
+LinkedList* cloneList(); // TODO
+bool reverseList(); // TODO
 bool freeList(void *listStruct);
 void printList(void *listStruct);
 bool insertValue(void *listStruct, void *newValue);
@@ -67,6 +66,8 @@ bool insertAtIndex(void *listStruct, void *newValue, int index);
 void* removeAtIndex(void *listStruct, int index);
 bool insertSorted(void *listStruct, void *newValue);
 bool isEmpty(void *listStruct);
+void* containsValue(void *listStruct, void *lookingFor);        
+void* sortedContainsValue(void *listStruct, void *lookingFor); // in progress
 
 // array functions
 void* listToDependentArray(void *listStruct);
@@ -620,6 +621,54 @@ bool isEmpty(void* listStruct){
     }
 }
 
+/* 
+ * This function will use a linear search
+ * You would use this if you are using unsorted data or only needed to do one search
+ *
+ * If you plan on doing a lot of searching, it would be better to:
+ *     1) Create a sorted list using the insertSorted() function
+ *     2) Turn the list to an array using the listToDependentArray() 
+ *        or listToIndependentArray() functions
+ *     3) Use the binarySearch() function
+ */
+void* containsValue(void *listStruct, void *lookingFor){
+    
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: containsValue(): void *listStruct is NULL\n\n");
+        return NULL;
+    }
+    
+    if( NULL == lookingFor ){
+        printf("\n\n\tWarning: LinkedList.h: containsValue(): void *lookingFor is NULL\n\n");
+        return NULL;
+    }
+
+    LinkedList *receivedList = listStruct;
+    llNode *curNode = receivedList->pHead;
+    
+    while( NULL != curNode ){
+        
+        if( EQUAL == compareValues(curNode->value, lookingFor) ){
+            return curNode->value;
+        }
+
+        curNode = curNode->pNext;
+    }
+
+    return NULL;
+}
+
+/*
+ * The containsValue() function will check every node in the list.
+ * This can be inefficient if the list being checked is sorted.
+ * The sortedContainsValue() function will return once a value greater than
+ * the one being looking for is found.
+ */
+void* sortedContainsValue(void *liststruct, void *lookingFor){
+    
+    return NULL;
+}
+
 /*
  * WHAT IS MEANT BY "DEPENDENT ARRAY"?
  * The returned array will be dependent upon the the received list structure because the array will point
@@ -792,8 +841,11 @@ void* binarySearch(void **arr, int arrLength, void *lookingFor){
 
     while( left <= right ){
         
-        // uncomment the macro below to see the values being compared
-        // VIEW_BINARY_SEARCH
+        // printf("Comparing...\n");
+        // printValue(arr[middle]);
+        // printValue(lookingFor);
+        // printf("\n");
+
         comparisonResult = compareValues( arr[middle], lookingFor);
         
         if( EQUAL == comparisonResult ){
@@ -810,7 +862,7 @@ void* binarySearch(void **arr, int arrLength, void *lookingFor){
         
         else{
             printf("\n\n\tError: LinkedList.h: binarySearch(): local variable int comparisonResult is %d", comparisonResult);
-            printf("\n\t\tcomparisonResult should be EQUAL (0), LESS_THAN (1), or GREATER_THAN (3)");
+            printf("\n\t\tcomparisonResult should be EQUAL (0), LESS_THAN (1), or GREATER_THAN (2)");
             printf("\n\t\tThis means that the compareValues() function was written incorrectly\n\n");
             return NULL;
         }
