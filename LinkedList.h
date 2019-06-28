@@ -28,9 +28,13 @@
 #include <stdbool.h>
 #include "City.h"
 
+// used by compareValues() and binarySearch()
 #define EQUAL 0
 #define LESS_THAN 1
 #define GREATER_THAN 2
+
+// can be used in binarySearch()
+#define VIEW_BINARY_SEARCH printf("Comparing...\n");printValue(arr[middle]);printValue(lookingFor);printf("\n");
 
 typedef struct llNode{
 
@@ -743,7 +747,6 @@ bool freeIndependentArray(void **arr){
     free(startAddress);
 
     return true;
-
 }
 
 /* 
@@ -782,7 +785,41 @@ void* binarySearch(void **arr, int arrLength, void *lookingFor){
         return NULL;
     }
 
-    return false;
+    int left = 0;
+    int right = arrLength-1;
+    int middle = (left+right)/2;
+    int comparisonResult;
+
+    while( left <= right ){
+        
+        // uncomment the macro below to see the values being compared
+        // VIEW_BINARY_SEARCH
+        comparisonResult = compareValues( arr[middle], lookingFor);
+        
+        if( EQUAL == comparisonResult ){
+            return arr[middle];
+        }
+
+        else if( LESS_THAN == comparisonResult ){
+            left = middle+1;
+        }
+
+        else if( GREATER_THAN == comparisonResult ){
+            right = middle-1;
+        }
+        
+        else{
+            printf("\n\n\tError: LinkedList.h: binarySearch(): local variable int comparisonResult is %d", comparisonResult);
+            printf("\n\t\tcomparisonResult should be EQUAL (0), LESS_THAN (1), or GREATER_THAN (3)");
+            printf("\n\t\tThis means that the compareValues() function was written incorrectly\n\n");
+            return NULL;
+        }
+
+        middle = (left+right)/2;
+    }
+
+    // returns NULL if the void *lookingFor was not found
+    return NULL;
 }
 
 void printArray(void **arr){

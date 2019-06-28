@@ -29,7 +29,7 @@ int main(){
     int iScanCnt;
     // new City to be inserted to LinkedList
     // LinkedList *list = newLinkedList();
-    Stack *s = newStack();
+    Stack *list = newStack();
 
     City *c;
     
@@ -38,44 +38,32 @@ int main(){
         
         iScanCnt = sscanf( buffer, "%[^,], %s", cityName, cityStateCode );
         c = newCity( cityName, cityStateCode );
-        // printf("NEW CITY: %s, %s\n", c->name, c->stateCode);
+        // printf("NEW CITY: %list, %list\n", c->name, c->stateCode);
         // insertValue(list, c);
-        push(s, c);
+        insertSorted(list, c);
     }
     
     printf("\nOriginal data in List Structure:\n");
-    printList(s);
+    printList(list);
 
-    void **arr = listToDependentArray(s);
+    void **arr = listToDependentArray(list);
     printf("\nOriginal data in array:\n");
     printArray(arr);
     printf("\nThe size of the array is %d\n", arrayLength(arr)); 
-
-    // City *cityFromArray = arr[0];
-    // strcpy(cityFromArray->name, "Pizza Town");
     
-    strcpy( ((City*)s->pHead->value)->name, "Pizza Town");
-
-    printf("\nData in array after the change:\n");
-    printArray(arr);
-
-    printf("\nData in the List Structure after the change:\n");
-    printList(s);
-
-    if( false == isEmpty(s) ){
-        printf("The queue is not empty\n");
-    }
     printf("\n");
+    City *lookingFor = newCity("Houston", "TX");
+    void *wasFound = binarySearch(arr, list->length, lookingFor);
 
-    printStack(s);
-    printf("\nLength before: %d\n", s->length);
+    if( NULL == wasFound ){
+        printf("The city was not found...\n");
+    }
 
-    printf("\n");   
-
-    City *sRem = pop(s);
-    printf("Name of removed city: %s\n", sRem->name);
-    printStack(s);
-    printf("\nLength of queue is now: %d\n\n", s->length);
+    else{
+        printf("The city was found!\n");
+        printCity(wasFound);
+        printf("\n");
+    }
 
     // City *remOne = newCity("Houston", "TX");
     // City *remTwo = newCity("New York", "NY");
@@ -85,8 +73,7 @@ int main(){
     // freeValue(remTwo);
     // freeValue(remThree);
     
-    freeValue(sRem);
-    freeStack(s);
+    freeList(list);
     fclose(fpData);
     
     freeDependentArray(arr);
