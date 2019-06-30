@@ -45,41 +45,9 @@ int main(){
     printf("\nOriginal list:\n");
     printList(list);
     
-    LinkedList *clone = (LinkedList*)cloneList(list);
-    printf("\nCloned list:\n");
-    printList(clone);
-
-    printf("\nOriginal List:\n");
-    City *lookingFor = newCity("New York", "NY");
-    // void *wasFound = containsValue(list, lookingFor);
-    
-    removeValue(list, lookingFor);
-    void *wasFound = sortedContainsValue(list, lookingFor);
-
-    if( NULL == wasFound ){
-        printf("The city was not found...\n");
-    }
-
-    else{
-        printf("The city was found!\n");
-        printCity(wasFound);
-        printf("\n");
-    }
-
-    printf("Cloned List:\n");
-    // void *wasFound = containsValue(list, lookingFor);
-    // removeValue(clone, lookingFor);
-    wasFound = sortedContainsValue(clone, lookingFor);
-
-    if( NULL == wasFound ){
-        printf("The city was not found...\n");
-    }
-
-    else{
-        printf("The city was found!\n");
-        printCity(wasFound);
-        printf("\n");
-    }
+    reverseList(list);
+    printf("\nReverse list:\n");
+    printList(list);
 
     // City *remOne = newCity("Houston", "TX");
     // City *remTwo = newCity("New York", "NY");

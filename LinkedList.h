@@ -28,7 +28,7 @@
 #include <stdbool.h>
 #include "City.h"
 
-// used by compareValues() and binarySearch()
+// used by compareValues(), sortedCompareValues(), and binarySearch()
 #define EQUAL 0
 #define LESS_THAN 1
 #define GREATER_THAN 2
@@ -220,6 +220,34 @@ LinkedList* newLinkedList(){
     }
 
     return (LinkedList*)list;
+}
+
+bool reverseList(void *listStruct){
+    
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: reverseList(): void *listStruct is NULL\n\n");
+        return false;
+    }
+    
+    LinkedList *receivedList = listStruct;
+    int length = receivedList->length;
+    
+    if( 1 == length || 0 == length ){
+        return true;
+    }
+    
+    void **arr = listToDependentArray(listStruct);
+    llNode *curNode = receivedList->pHead;
+    int i;
+
+    for( i = 0; i < length; i++ ){
+        
+        curNode->value = arr[length-(i+1)];
+        curNode = curNode->pNext;
+    }
+    
+    freeDependentArray(arr);
+    return true;
 }
 
 bool freeList(void *listStruct){
