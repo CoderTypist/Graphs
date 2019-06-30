@@ -55,8 +55,8 @@ llNode* valueToNode(void *value);
 
 // list functions
 void* newList();
+void* cloneList(void *listStruct);
 LinkedList* newLinkedList();
-LinkedList* cloneList(); // TODO
 bool reverseList(); // TODO
 bool freeList(void *listStruct);
 void printList(void *listStruct);
@@ -67,7 +67,7 @@ void* removeAtIndex(void *listStruct, int index);
 bool insertSorted(void *listStruct, void *newValue);
 bool isEmpty(void *listStruct);
 void* containsValue(void *listStruct, void *lookingFor);        
-void* sortedContainsValue(void *listStruct, void *lookingFor); // in progress
+void* sortedContainsValue(void *listStruct, void *lookingFor);
 
 // array functions
 void* listToDependentArray(void *listStruct);
@@ -180,7 +180,7 @@ void* newList(){
     LinkedList *list = (LinkedList*)malloc(sizeof(LinkedList));
 
     if( NULL == list ){
-        printf("\n\n\tError: List.h: newList(): Could not allocate memory for new List\n\n");
+        printf("\n\n\tError: LinkedList.h: newList(): Could not allocate memory for new List\n\n");
         exit(1);
     }
     
@@ -190,6 +190,25 @@ void* newList(){
     list->length = 0;
 
     return list;
+}
+
+void* cloneList(void *listStruct){
+    
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: cloneList(): void *listStruct was NULL\n\n");
+    }
+
+    LinkedList *receivedList = listStruct;
+    llNode *curNode = receivedList->pHead;
+    LinkedList *cloned = newLinkedList();
+
+    while( NULL != curNode ){
+        
+        insertValue(cloned, cloneValue(curNode->value) );
+        curNode = curNode->pNext;
+    }
+
+    return cloned;
 }
 
 LinkedList* newLinkedList(){
@@ -664,8 +683,39 @@ void* containsValue(void *listStruct, void *lookingFor){
  * The sortedContainsValue() function will return once a value greater than
  * the one being looking for is found.
  */
-void* sortedContainsValue(void *liststruct, void *lookingFor){
+void* sortedContainsValue(void *listStruct, void *lookingFor){
+
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: sortedContainsValue(): void *listStruct is NULL\n\n");
+    }
+
+    if( NULL == lookingFor ){
+        printf("\n\n\tWarning: LinkedList.h: sortedContainsValue(): void *lookingFor is NULL\n\n");
+    }
+
+    LinkedList *receivedList = listStruct;
+    llNode *curNode = receivedList->pHead;
+    int comparisonResult;
+
+    while( NULL != curNode ){
+        
+        comparisonResult = compareValues(curNode->value, lookingFor);
+        
+        // Return the value if it is found
+        if( EQUAL == comparisonResult ){
+            return curNode->value;
+        }
+        
+        // All of the remaining values in the list should be greater than void *lookingFor
+        else if( GREATER_THAN == comparisonResult ){
+            return NULL;
+        }
+
+        // loop continues to iterate if comparisonResult == LESS_THAN
     
+        curNode = curNode->pNext;
+    }
+
     return NULL;
 }
 

@@ -28,8 +28,7 @@ int main(){
     char cityStateCode[3];
     int iScanCnt;
     // new City to be inserted to LinkedList
-    // LinkedList *list = newLinkedList();
-    Stack *list = newStack();
+    LinkedList *list = newLinkedList();
 
     City *c;
     
@@ -39,21 +38,38 @@ int main(){
         iScanCnt = sscanf( buffer, "%[^,], %s", cityName, cityStateCode );
         c = newCity( cityName, cityStateCode );
         // printf("NEW CITY: %list, %list\n", c->name, c->stateCode);
-        // insertValue(list, c);
         insertSorted(list, c);
+        // insertSorted(list, c);
     }
     
-    printf("\nOriginal data in List Structure:\n");
+    printf("\nOriginal list:\n");
     printList(list);
-
-    void **arr = listToDependentArray(list);
-    printf("\nOriginal data in array:\n");
-    printArray(arr);
-    printf("\nThe size of the array is %d\n", arrayLength(arr)); 
     
-    printf("\n");
-    City *lookingFor = newCity("Houston", "TX");
-    void *wasFound = binarySearch(arr, list->length, lookingFor);
+    LinkedList *clone = (LinkedList*)cloneList(list);
+    printf("\nCloned list:\n");
+    printList(clone);
+
+    printf("\nOriginal List:\n");
+    City *lookingFor = newCity("New York", "NY");
+    // void *wasFound = containsValue(list, lookingFor);
+    
+    removeValue(list, lookingFor);
+    void *wasFound = sortedContainsValue(list, lookingFor);
+
+    if( NULL == wasFound ){
+        printf("The city was not found...\n");
+    }
+
+    else{
+        printf("The city was found!\n");
+        printCity(wasFound);
+        printf("\n");
+    }
+
+    printf("Cloned List:\n");
+    // void *wasFound = containsValue(list, lookingFor);
+    // removeValue(clone, lookingFor);
+    wasFound = sortedContainsValue(clone, lookingFor);
 
     if( NULL == wasFound ){
         printf("The city was not found...\n");
@@ -68,7 +84,7 @@ int main(){
     // City *remOne = newCity("Houston", "TX");
     // City *remTwo = newCity("New York", "NY");
     // City *remThree = newCity("San Jose", "CA"); 
-    
+
     // freeValue(remOne);
     // freeValue(remTwo);
     // freeValue(remThree);
@@ -76,8 +92,6 @@ int main(){
     freeList(list);
     fclose(fpData);
     
-    freeDependentArray(arr);
-
     return 0;
 }
 
