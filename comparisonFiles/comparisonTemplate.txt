@@ -1,0 +1,26 @@
+﻿int compareCOMPACT(void *firstValue, void *secondValue);
+int compareCOMPACT(void *firstValue, void *secondValue){
+
+    if( NULL == firstValue ){
+        printf(“\n\n\tWarning: Comparisons.h: compareTYPE(): void *firstValue was NULL\n\n”);
+        return -1;
+    }
+
+    if( NULL == secondValue ){
+        printf(“\n\n\tWarning: Comparisons.h: compareTYPE(): void *secondValue was NULL\n\n”);
+        return -1;
+    }
+
+    TYPE first = *first;
+    TYPE second = *second;
+
+    if( first < second ){
+        return LESS_THAN;
+    }
+
+    else if( first > second ) {
+        return GREATER_THAN;
+    }
+
+    return EQUAL;
+}
