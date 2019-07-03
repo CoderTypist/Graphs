@@ -5,6 +5,11 @@ echo "// author Christian Bargraser" > ./Comparisons.h
 echo "" >> ./Comparisons.h
 echo "#ifndef _Comparisons_h_" >> ./Comparisons.h
 echo "#define _Comparisons_h_" >> ./Comparisons.h
+echo "" >> ./Comparisons.h
+echo "#define EQAUL 0" >> ./Comparisons.h
+echo "#define LESS_THAN 1" >> ./Comparisons.h
+echo "#define GREATER_THAN 2" >> ./Comparisons.h
+
 echo "" > ./comparisonPrototypes.txt
 echo "" > ./comparisonFunctions.txt
 
