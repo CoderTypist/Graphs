@@ -27,11 +27,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "City.h"
+#include "Comparisons.h"
 
 // used by compareValues(), sortedCompareValues(), and binarySearch()
-#define EQUAL 0
-#define LESS_THAN 1
-#define GREATER_THAN 2
+// #define EQUAL 0
+// #define LESS_THAN 1
+// #define GREATER_THAN 2
 
 typedef struct llNode{
 
@@ -44,6 +45,7 @@ typedef struct LinkedList{
     struct llNode *pHead;
     struct llNode *pTail;
     int length;
+    int (*compareValues) (void*, void*);
 }LinkedList;
 
 // llNode functions
@@ -57,7 +59,7 @@ llNode* valueToNode(void *value);
 void* newList();
 void* cloneList(void *listStruct);
 LinkedList* newLinkedList();
-bool reverseList(); // TODO
+bool reverseList();
 bool freeList(void *listStruct);
 void printList(void *listStruct);
 bool insertValue(void *listStruct, void *newValue);

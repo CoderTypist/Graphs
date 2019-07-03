@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define EQUAL 0
+#define LESS_THAN 1
+#define GREATER_THAN 2
+
 typedef struct City{
     
     char name[32];
@@ -57,6 +61,52 @@ City* newCity(char *name, char *stateCode){
     return c;
 }
 
+// returns LESS_THAN, EQUALS, GREATER_THAN, or ERROR
+int compareCities(void *firstValue, void *secondValue){
+    
+    firstValue = (City*)firstValue;
+    secondValue = (City*)secondValue;
+
+    if( NULL == firstValue ){
+        printf("\n\n\tWarning: LinkedList.h: compareValues(): void *firstValue was NULL\n\n");
+        return -1;
+    }
+
+    if( NULL == secondValue ){
+        printf("\n\n\tWarning: LinkedList.h: compareValues(): void *secondValue was NULL\n\n");
+        return -1;
+    }
+
+
+    // MODIFICATION BEGINS HERE
+    City *cityOne = (City*)firstValue;
+    City *cityTwo = (City*)secondValue;
+    
+    if( NULL == cityOne->name ){
+        printf("\n\n\tWarning: LinkedList.h: compareValues(): cityOne->name is NULL\n\n");
+        return -1;
+    }
+
+    if( NULL == cityTwo->name ){
+        printf("\n\n\tWarning: LinkedList.h: compareValues(): cityTwo->name is NULL\n\n");
+        return -1;
+    }
+
+    int comparisonResult = strcmp(cityOne->name, cityTwo->name);
+    
+    if( comparisonResult < 0 ){
+        return LESS_THAN;
+    }
+
+    else if( comparisonResult > 0 ){
+        return GREATER_THAN;
+    }
+
+    else{
+        return EQUAL;
+    }
+}
+
 // used by the printList function in LinkedList.h
 void printCity(City *c){
     
@@ -64,3 +114,11 @@ void printCity(City *c){
 }
 
 #endif
+
+
+
+
+
+
+
+
