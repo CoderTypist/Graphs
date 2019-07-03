@@ -25,6 +25,7 @@ typedef struct Queue{
     struct llNode *pHead;
     struct llNode *pTail;
     int length;
+    int (*compareValues) (void*, void*);
 }Queue;
 
 Queue* newQueue();

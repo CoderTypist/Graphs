@@ -25,6 +25,7 @@ typedef struct PriorityQueue{
     struct llNode *pHead;
     struct llNode *pTail;
     int length;
+    int (*compareValues) (void*, void*);
 }PriorityQueue;
 
 PriorityQueue* newPriorityQueue();

@@ -25,6 +25,7 @@ typedef struct Stack{
     struct llNode *pHead;
     struct llNode *pTail;
     int length;
+    int (*compareValues) (void*, void*);
 }Stack;
 
 Stack* newStack();
