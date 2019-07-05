@@ -3,10 +3,6 @@
  * 
  * Functions that need to be rewritten depending on the data type in the list:
  *
- * compareValues()
- *     - used by removeValue()
- *     - used by removeAtIndex()
- *     - used by insertSorted()
  * printValue()
  *     - used by printList()
  *     - used by printArray()
@@ -15,6 +11,13 @@
  *     - used by removeAtIndex()
  * cloneValue()
  *     - used by listToIndependentArray()
+ *
+ * // The LinkedList struct has a function pointer as an attribute
+ * // The function passed in will be used by other functions
+ * compareValues()
+ *     - used by removeValue()
+ *     - used by removeAtIndex()
+ *     - used by insertSorted()
  * 
  * City.h is included for testing purposes.
  *
@@ -29,7 +32,7 @@
 #include "City.h"
 #include "Comparisons.h"
 
-// used by compareValues(), sortedCompareValues(), and binarySearch()
+// used by compareValues(), sortedContainsValues(), and binarySearch()
 // #define EQUAL 0
 // #define LESS_THAN 1
 // #define GREATER_THAN 2
@@ -869,13 +872,13 @@ bool freeIndependentArray(void **arr){
  * listToIndendentArray() functions, the length of the array can be retrieved from the lists
  * length attribute. 
  *
- *     Ex: void *valueIWant = binarySearch(arr, listStructure->length, valueIAmLookingFor);
+ *     Ex: void *valueIWant = binarySearch(arr, listStructure->length, valueIAmLookingFor, myFunctionToCompareValues);
  *
  * LENGTH OF THE ARRAY IS UNKNOWN
  * If the length of the array is unknown or the length of the array is no longer in sync with 
  * the original list structure, you would need to call arrayLength()
  *
- *     Ex: void *valueIWant = binarySearch(arr, arrLength(arr), valueIAmLookingFor);
+ *     Ex: void *valueIWant = binarySearch(arr, arrLength(arr), valueIAmLookingFor, myFunctionToCompareValues);
  */
 void* binarySearch(void **arr, int arrLength, void *lookingFor, int (*compareValues) (void*, void*) ){
     
