@@ -15,8 +15,6 @@ echo "" > ./comparisonFunctions.txt
 
 while read unspaced && read spacedOut; do
     
-    echo "$unspaced and $spacedOut"
-    
     # reads the first line from the template
     read firstLine < ./comparisonTemplate.txt
     firstLine=$(echo "$firstLine" | sed "s/COMPACT/$unspaced/g")
@@ -37,7 +35,6 @@ while read unspaced && read spacedOut; do
 
         line=$(echo "$line" | sed "s/TYPE/$spacedOut/g")
         line=$(echo "$line" | sed "s/COMPACT/$unspaced/g")
-        echo "line is $line"
         echo "$line" >> ./comparisonFunctions.txt
 
     done < ./comparisonTemplate.txt
