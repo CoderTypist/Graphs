@@ -29,6 +29,7 @@ int main(){
     int iScanCnt;
     // new City to be inserted to LinkedList
     LinkedList *list = newLinkedList();
+    list->compareValues = compareCities;
 
     City *c;
     
@@ -45,6 +46,19 @@ int main(){
     printf("\nOriginal list:\n");
     printList(list);
     
+    City *lookingFor = newCity("Houston", "TX");
+    void **arr = listToDependentArray(list);
+    void *wasFound = binarySearch(arr, list->length, lookingFor, compareCities);
+
+    if( NULL == wasFound ){
+        printf("City was not found...\n");
+    }
+
+    else{
+        printf("City was found!\n");
+        printCity((City*)wasFound);
+    }
+    
     reverseList(list);
     printf("\nReverse list:\n");
     printList(list);
@@ -57,6 +71,8 @@ int main(){
     // freeValue(remTwo);
     // freeValue(remThree);
     
+    freeValue(lookingFor);
+    freeDependentArray(arr);
     freeList(list);
     fclose(fpData);
     

@@ -52,7 +52,7 @@ typedef struct LinkedList{
 void* cloneValue(void *originalValue);
 bool freeValue();
 void printValue(void *value);
-int compareValues(void *firstValue, void *secondValue);
+int compareAddresses(void *firstValue, void *secondValue);
 llNode* valueToNode(void *value);
 
 // list functions
@@ -76,7 +76,7 @@ void* listToDependentArray(void *listStruct);
 void* listToIndpendentArray(void *listStruct);
 bool freeDependentArray(void **arr);
 bool freeIndependentArray(void **arr);
-void* binarySearch(void **arr, int arrLength, void *lookingFor);
+void* binarySearch(void **arr, int arrLength, void *lookingFor, int (*compareValues) (void*, void*) );
 void printArray(void **arr);
 int arrayLength(void **arr);
 
@@ -113,47 +113,31 @@ void printValue(void *value){
     printCity((City*)(value));
 }
 
-// returns LESS_THAN, EQUALS, GREATER_THAN, or ERROR
-int compareValues(void *firstValue, void *secondValue){
+// This is the default function used to compare values
+// It is assigned to a LinkedLists.h compareValues attribute (which is a function pointer)
+int compareAddresses(void *firstValue, void *secondValue){
     
     if( NULL == firstValue ){
-        printf("\n\n\tWarning: LinkedList.h: compareValues(): void *firstValue was NULL\n\n");
+        printf("\n\n\tWarning: LinkedList.h: compareAddresses(): void *firstValue was NULL");
+        printf("\n\t\tcompareAddresses() is the default function used for comparisons\n\n");
         return -1;
     }
 
     if( NULL == secondValue ){
-        printf("\n\n\tWarning: LinkedList.h: compareValues(): void *secondValue was NULL\n\n");
+        printf("\n\n\tWarning: LinkedList.h: compareAddresses(): void *secondValue was NULL");
+        printf("\n\t\tcompareAddresses() is the default function used for comparisons\n\n");
         return -1;
     }
 
-
-    // MODIFICATION BEGINS HERE
-    City *cityOne = (City*)firstValue;
-    City *cityTwo = (City*)secondValue;
-    
-    if( NULL == cityOne->name ){
-        printf("\n\n\tWarning: LinkedList.h: compareValues(): cityOne->name is NULL\n\n");
-        return -1;
-    }
-
-    if( NULL == cityTwo->name ){
-        printf("\n\n\tWarning: LinkedList.h: compareValues(): cityTwo->name is NULL\n\n");
-        return -1;
-    }
-
-    int comparisonResult = strcmp(cityOne->name, cityTwo->name);
-    
-    if( comparisonResult < 0 ){
+    if( firstValue < secondValue ){
         return LESS_THAN;
     }
 
-    else if( comparisonResult > 0 ){
+    else if( firstValue > secondValue ){
         return GREATER_THAN;
     }
 
-    else{
-        return EQUAL;
-    }
+    return EQUAL;
 }
 
 llNode* valueToNode(void* value){
@@ -190,6 +174,7 @@ void* newList(){
     list->pHead = NULL;
     list->pTail = NULL;
     list->length = 0;
+    list->compareValues = compareAddresses;
 
     return list;
 }
@@ -351,7 +336,7 @@ bool removeValue(void *listStruct, void *valueToRemove){
     }
 
     // if the head is the child to remove
-    if( EQUAL == compareValues(valueToRemove, list->pHead->value) ){
+    if( EQUAL == list->compareValues(valueToRemove, list->pHead->value) ){
         
         if( list->length == 1 ){
             
@@ -381,13 +366,13 @@ bool removeValue(void *listStruct, void *valueToRemove){
     int curElement = 1;
     while( NULL != curNode ){
         
-        if( EQUAL == compareValues(valueToRemove, curNode->value) ){
+        if( EQUAL == list->compareValues(valueToRemove, curNode->value) ){
             
             llNode *hold = curNode;
             previous->pNext = curNode->pNext;
             
             // if the tail is being removed, the tail needs to be updated
-            if( EQUAL == compareValues(valueToRemove, list->pTail->value) ){
+            if( EQUAL == list->compareValues(valueToRemove, list->pTail->value) ){
                 list->pTail = previous;
             }
 
@@ -608,7 +593,7 @@ bool insertSorted(void *listStruct, void *newValue){
     }
 
     // if inserting at the beginning of the list
-    if( LESS_THAN == compareValues(newValue, list->pHead->value) ){
+    if( LESS_THAN == list->compareValues(newValue, list->pHead->value) ){
         
         newNode->pNext = list->pHead;
         list->pHead = newNode;
@@ -624,7 +609,7 @@ bool insertSorted(void *listStruct, void *newValue){
     while( NULL != curNode ){
         
         // inserts newNode
-        if( LESS_THAN == compareValues(newValue, curNode->value) ){
+        if( LESS_THAN == list->compareValues(newValue, curNode->value) ){
             
             previous->pNext = newNode;
             newNode->pNext = curNode;
@@ -697,7 +682,7 @@ void* containsValue(void *listStruct, void *lookingFor){
     
     while( NULL != curNode ){
         
-        if( EQUAL == compareValues(curNode->value, lookingFor) ){
+        if( EQUAL == receivedList->compareValues(curNode->value, lookingFor) ){
             return curNode->value;
         }
 
@@ -729,7 +714,7 @@ void* sortedContainsValue(void *listStruct, void *lookingFor){
 
     while( NULL != curNode ){
         
-        comparisonResult = compareValues(curNode->value, lookingFor);
+        comparisonResult = receivedList->compareValues(curNode->value, lookingFor);
         
         // Return the value if it is found
         if( EQUAL == comparisonResult ){
@@ -892,7 +877,7 @@ bool freeIndependentArray(void **arr){
  *
  *     Ex: void *valueIWant = binarySearch(arr, arrLength(arr), valueIAmLookingFor);
  */
-void* binarySearch(void **arr, int arrLength, void *lookingFor){
+void* binarySearch(void **arr, int arrLength, void *lookingFor, int (*compareValues) (void*, void*) ){
     
     if( NULL == arr ){
         printf("\n\n\tWarning: LinkedList.h: binarySearch(): void *listStruct was NULL\n\n");
