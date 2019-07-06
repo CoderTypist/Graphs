@@ -10,6 +10,7 @@
 #define BUFFER_SIZE 50
 
 void printListLength(void *listStruct);
+bool mySpecs(void *value);
 
 int main(){
     
@@ -46,19 +47,21 @@ int main(){
     printf("\nOriginal list:\n");
     printList(list);
     
-    City *lookingFor = newCity("Houston", "TX");
-    void **arr = listToDependentArray(list);
-    void *wasFound = binarySearch(arr, list->length, lookingFor, compareCities);
-
-    if( NULL == wasFound ){
-        printf("City was not found...\n");
-    }
-
-    else{
-        printf("City was found!\n");
-        printCity((City*)wasFound);
-    }
+    // City *lookingFor = newCity("Houston", "TX");
+    // void **arr = listToDependentArray(list);
+    // void *wasFound = binarySearch(arr, list->length, lookingFor, compareCities);
     
+    LinkedList *replica = filteredCopy(list, mySpecs);
+    printf("\nFiltered copy:\n");
+    printList(replica);
+
+    printf("\nUntouched original:\n");
+    printList(list);
+
+    printf("\nFiltered List:\n");
+    filterList(list, mySpecs);
+    printList(list);
+
     reverseList(list);
     printf("\nReverse list:\n");
     printList(list);
@@ -71,9 +74,9 @@ int main(){
     // freeValue(remTwo);
     // freeValue(remThree);
     
-    freeValue(lookingFor);
-    freeDependentArray(arr);
+    // freeDependentArray(arr);
     freeList(list);
+    freeList(replica);
     fclose(fpData);
     
     return 0;
@@ -85,7 +88,17 @@ void printListLength(void *listStruct){
     printf("\nLength of the list is: %d\n", list->length);
 }
 
+bool mySpecs(void *value){
+    
+    City *c = value;
+    char* cityName = c->name;
 
+    if( 'S' == cityName[0] ){
+        return true;
+    }
+    
+    return false;
+}
 
 
 

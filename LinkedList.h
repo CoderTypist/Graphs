@@ -32,7 +32,7 @@
 #include "City.h"
 #include "Comparisons.h"
 
-// used by compareValues(), sortedContainsValues(), and binarySearch()
+// used by LinkedList->compareValues(), sortedContainsValues(), and binarySearch()
 // #define EQUAL 0
 // #define LESS_THAN 1
 // #define GREATER_THAN 2
@@ -62,6 +62,8 @@ llNode* valueToNode(void *value);
 void* newList();
 void* cloneList(void *listStruct);
 LinkedList* newLinkedList();
+void filterList(void *listStruct, bool (*keep) (void*));
+LinkedList* filteredCopy(void *listStruct, bool (*keep) (void*));
 bool reverseList();
 bool freeList(void *listStruct);
 void printList(void *listStruct);
@@ -212,6 +214,110 @@ LinkedList* newLinkedList(){
     return (LinkedList*)list;
 }
 
+void filterList(void *listStruct, bool (*keep) (void*)){
+    
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: filterList(): void *listStruct was NULL\n\n");
+        return;
+    }
+    
+    if( NULL == keep ){
+        printf("\n\n\tWarning: LinkedList.h: filterList(): bool (*keep) (void*)) was NULL\n\n");
+        return;
+    }
+
+    LinkedList *list = (LinkedList*)listStruct;
+
+    // if the list is empty
+    if( list->length == 0 ){
+        return;
+    }
+    
+    bool removedHead = true;
+
+    // checks pHead
+    while( true == removedHead ){
+        
+        // if pHead needs to be removed
+        if( false == keep(list->pHead->value) ){
+	
+	        if( list->length == 1 ){
+	    
+	            freeValue(list->pHead->value);
+	            free(list->pHead);
+	            list->pHead = NULL;
+	            list->pTail = NULL;
+	        }
+	
+	        else{
+	    
+	            llNode *hold = list->pHead;
+	            list->pHead = list->pHead->pNext;
+	            freeValue(hold->value);
+	            free(hold);
+	        }
+
+	        // decrease the length of the list
+	        list->length = (list->length)-1;
+        }
+        
+        // if pHead was not removed
+        else{
+
+            // if the list was completely emptied
+            if( NULL == list->pHead ){
+                return;
+            }
+
+            removedHead = false;
+        }
+    }
+    
+    llNode *curNode = list->pHead->pNext;
+    llNode *previous = list->pHead;
+
+    int curElement = 2;
+    while( NULL != curNode ){
+        
+        if( false == keep(curNode->value) ){
+            
+            llNode *hold = curNode;
+            previous->pNext = curNode->pNext;
+            
+            // if the tail is being removed, the tail needs to be updated
+            if( curElement == list->length ){
+                list->pTail = previous;
+            }
+
+            freeValue(hold->value);
+            free(hold);
+            list->length = (list->length)-1;
+        }
+        
+        previous = curNode;
+        curNode = curNode->pNext;
+        curElement++;
+    }
+}
+
+LinkedList* filteredCopy(void *listStruct, bool (*keep) (void*) ){
+    
+    if( NULL == listStruct ){
+        printf("\n\n\tWarning: LinkedList.h: filteredCopy(): void *listStruct is NULL\n\n");
+        return NULL;
+    }
+
+    if( NULL == keep ){
+        printf("\n\n\tWarning: LinkedList.h: filteredCopy(): void *listStruct is NULL\n\n");
+        return NULL;
+    }
+
+    LinkedList *copy = cloneList(listStruct);
+    filterList(copy, keep);
+
+    return copy;
+}
+
 bool reverseList(void *listStruct){
     
     if( NULL == listStruct ){
@@ -322,7 +428,7 @@ bool insertValue(void *listStruct, void *newValue){
 bool removeValue(void *listStruct, void *valueToRemove){
     
     if( NULL == listStruct ){
-        printf("\n\n\tWarning: LinkedList.h: removeValue(): void *listsStruct was NULL\n\n");
+        printf("\n\n\tWarning: LinkedList.h: removeValue(): void *listStruct was NULL\n\n");
         return false;
     }
 
@@ -366,7 +472,7 @@ bool removeValue(void *listStruct, void *valueToRemove){
     llNode *curNode = list->pHead->pNext;
     llNode *previous = list->pHead;
 
-    int curElement = 1;
+    int curElement = 2;
     while( NULL != curNode ){
         
         if( EQUAL == list->compareValues(valueToRemove, curNode->value) ){
@@ -375,7 +481,7 @@ bool removeValue(void *listStruct, void *valueToRemove){
             previous->pNext = curNode->pNext;
             
             // if the tail is being removed, the tail needs to be updated
-            if( EQUAL == list->compareValues(valueToRemove, list->pTail->value) ){
+            if( curElement == list->length ){
                 list->pTail = previous;
             }
 
