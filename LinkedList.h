@@ -51,7 +51,7 @@ typedef struct LinkedList{
     int (*compareValues) (void*, void*);
 }LinkedList;
 
-// llNode functions
+// value functions
 void* cloneValue(void *originalValue);
 bool freeValue();
 void printValue(void *value);
